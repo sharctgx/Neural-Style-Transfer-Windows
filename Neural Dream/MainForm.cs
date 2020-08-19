@@ -128,6 +128,53 @@ namespace Neural_Dream
             }
         }
 
+        private void SrcBtnVideo_Click(object sender, EventArgs e)
+        {
+            SetUpOpenFileDialog();
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                SrcPathLabel.Text = openFileDialog1.FileName;
+                SrcBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
+                SrcBtn.Text = "";
+            }
+        }
+
+
+        private void StyleBtnVideo_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Multiselect = true;
+            SetUpOpenFileDialog();
+            styleCount = 0;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StringBuilder pathBuilder = new StringBuilder();
+
+                foreach (string fn in openFileDialog1.FileNames)
+                {
+                    pathBuilder.Append("\"").Append(fn).Append("\" ");
+                    styleCount++;
+                }
+                StylePathLabel.Text = pathBuilder.ToString();
+                StyleBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileNames[0]);
+                StyleBtn.Text = "";
+            }
+        }
+
+        private void DstBtnVideo_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.FileName = "";
+            saveFileDialog1.InitialDirectory = desktopPath;
+            saveFileDialog1.Filter = "";
+            saveFileDialog1.FilterIndex = 1;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                DstPathLabel.Text = saveFileDialog1.FileName;
+            }
+        }
+
 
         private void ContentMaskImageBtn_Click(object sender, EventArgs e)
         {
@@ -740,6 +787,19 @@ namespace Neural_Dream
         }
 
         private void ExecuteButton_Click_1(object sender, EventArgs e)
+        {
+            if (PerformChecks()) return;
+
+            string command = "Script/" + GetNetworkPath();
+            string args = BuildCommandArgs();
+
+            Console.WriteLine(args);
+            LogData(args);
+
+            RunScript(command, args);
+        }
+
+        private void ExecuteButtonVideo_Click(object sender, EventArgs e)
         {
             if (PerformChecks()) return;
 
