@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Neural_Style_Transfer
+﻿namespace Neural_Style_Transfer
 {
     class LogDoodleData
     {

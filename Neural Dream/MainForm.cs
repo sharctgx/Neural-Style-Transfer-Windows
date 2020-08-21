@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Neural_Style_Transfer;
 using Neural_Style_Transfer.LogClasses;
@@ -51,8 +45,10 @@ namespace Neural_Dream
             "conv1_2", "conv1_1"
         };
 
-        private const string NETWORK_PATH = "Network.py";
-        private const string INETWORK_PATH = "INetwork.py";
+        // private const string NETWORK_PATH = "Network.py";
+        // private const string INETWORK_PATH = "INetwork.py";
+        private const string NETWORK_PATH = "Dummy.py";
+        private const string INETWORK_PATH = "Dummy.py";
         private const string NEURAL_DOODLE_PATH = "neural_doodle.py";
         private const string INEURAL_DOODLE_PATH = "improved_neural_doodle.py";
         private const string COLOR_TRANSFER_PATH = "color_transfer.py";
@@ -589,7 +585,7 @@ namespace Neural_Dream
                     int p = (int) Environment.OSVersion.Platform;
                     
                     string pythonName;
-                    // Unix/Linux pyton name. Used if run with mono.
+                    // Unix/Linux python name. Used if run with mono.
                     // From the mono FAQ: http://www.mono-project.com/docs/faq/technical/
                     if ((p == 4) || (p == 6) || (p == 128))
                     {
