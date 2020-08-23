@@ -45,10 +45,8 @@ namespace Neural_Dream
             "conv1_2", "conv1_1"
         };
 
-        // private const string NETWORK_PATH = "Network.py";
-        // private const string INETWORK_PATH = "INetwork.py";
-        private const string NETWORK_PATH = "Dummy.py";
-        private const string INETWORK_PATH = "Dummy.py";
+        private const string NETWORK_PATH = "Network.py";
+        private const string INETWORK_PATH = "INetwork.py";
         private const string NEURAL_DOODLE_PATH = "neural_doodle.py";
         private const string INEURAL_DOODLE_PATH = "improved_neural_doodle.py";
         private const string COLOR_TRANSFER_PATH = "color_transfer.py";

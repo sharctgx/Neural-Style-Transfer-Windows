@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
@@ -7,6 +8,7 @@ import sys
 import cv2 as cv
 import os
 import subprocess
+import shutil
 
 FRAME_PREFIX_BASE = "base"
 FRAME_PREFIX_STYLE = "style"
@@ -34,7 +36,7 @@ base_video_path = args.base_video_path
 style_video_path = args.style_video_path
 result_path = args.result_path
 
-folder_for_frames = "../../media/roboframes"  # TODO: change this and delete after working
+folder_for_frames = "../../media"
 
 if os.path.exists(folder_for_frames):
     for f in os.listdir(folder_for_frames):
@@ -70,12 +72,9 @@ for i in range(min(base_frames_count, style_frames_count)):
     output_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_OUTPUT)
 
     subprocess.call([python_name, network_path, base_frame, style_frame, output_frame])
-    
-
-folder_with_output_frames = folder_for_frames   # TODO: change this? Or make it one variable
 
 # Determine the width and height from the first image
-image = os.path.join(folder_with_output_frames, get_frame_path(folder_with_output_frames, 0, FRAME_PREFIX_OUTPUT))
+image = os.path.join(folder_for_frames, get_frame_path(folder_for_frames, 0, FRAME_PREFIX_OUTPUT))
 frame = cv.imread(image)
 height, width, channels = frame.shape
 
@@ -89,8 +88,10 @@ while os.path.exists(image):
     frame = cv.imread(image)
     out.write(frame)  # Write out frame to video
     count += 1
-    image = get_frame_path(folder_with_output_frames, count, FRAME_PREFIX_OUTPUT)
+    image = get_frame_path(folder_for_frames, count, FRAME_PREFIX_OUTPUT)
 
 # Release everything if job is finished
 out.release()
 cv.destroyAllWindows()
+
+shutil.rmtree(folder_for_frames)
