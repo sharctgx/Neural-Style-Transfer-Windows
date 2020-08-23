@@ -15,8 +15,8 @@ FRAME_PREFIX_STYLE = "style"
 FRAME_PREFIX_OUTPUT = "output"
 
 
-def get_frame_path(folder, count, frame_prefix):
-    return os.path.join(folder, f"{frame_prefix}{count}.jpg")
+def get_frame_path(folder, count, frame_prefix, ext = "jpg"):
+    return os.path.join(folder, f"{frame_prefix}{count}.{ext}")
 
 
 parser = argparse.ArgumentParser(description='Neural style transfer with Keras.')
@@ -29,7 +29,67 @@ parser.add_argument('style_video_path', metavar='ref', type=str,
 parser.add_argument('result_path', metavar='res_path', type=str,
                     help='Path for the saved results.')
 
-rest_args = sys.argv[4:]  # TODO: use it later for a real neural network
+parser.add_argument("network_path", metavar="network_path", type=str,
+                    help="Path for the network script")
+
+parser.add_argument("--style_masks", type=str, default=None, nargs='+',
+                    help='Masks for style images')
+
+parser.add_argument("--content_mask", type=str, default=None,
+                    help='Masks for the content image')
+
+parser.add_argument("--color_mask", type=str, default=None,
+                    help='Mask for color preservation')
+
+parser.add_argument("--image_size", dest="img_size", default=400, type=int,
+                    help='Minimum image size')
+
+parser.add_argument("--content_weight", dest="content_weight", default=0.025, type=float,
+                    help="Weight of content")
+
+parser.add_argument("--style_weight", dest="style_weight", nargs='+', default=[1], type=float,
+                    help="Weight of style, can be multiple for multiple styles")
+
+parser.add_argument("--style_scale", dest="style_scale", default=1.0, type=float,
+                    help="Scale the weighing of the style")
+
+parser.add_argument("--total_variation_weight", dest="tv_weight", default=8.5e-5, type=float,
+                    help="Total Variation weight")
+
+parser.add_argument("--num_iter", dest="num_iter", default=10, type=int,
+                    help="Number of iterations")
+
+parser.add_argument("--model", default="vgg16", type=str,
+                    help="Choices are 'vgg16' and 'vgg19'")
+
+parser.add_argument("--content_loss_type", default=0, type=int,
+                    help='Can be one of 0, 1 or 2. Readme contains the required information of each mode.')
+
+parser.add_argument("--rescale_image", dest="rescale_image", default="False", type=str,
+                    help="Rescale image after execution to original dimentions")
+
+parser.add_argument("--rescale_method", dest="rescale_method", default="bilinear", type=str,
+                    help="Rescale image algorithm")
+
+parser.add_argument("--maintain_aspect_ratio", dest="maintain_aspect_ratio", default="True", type=str,
+                    help="Maintain aspect ratio of loaded images")
+
+parser.add_argument("--content_layer", dest="content_layer", default="conv5_2", type=str,
+                    help="Content layer used for content loss.")
+
+parser.add_argument("--init_image", dest="init_image", default="content", type=str,
+                    help="Initial image used to generate the final image. Options are 'content', 'noise', or 'gray'")
+
+parser.add_argument("--pool_type", dest="pool", default="max", type=str,
+                    help='Pooling type. Can be "ave" for average pooling or "max" for max pooling')
+
+parser.add_argument('--preserve_color', dest='color', default="False", type=str,
+                    help='Preserve original color in image')
+
+parser.add_argument('--min_improvement', default=0.0, type=float,
+                    help='Defines minimum improvement required to continue script')
+
+rest_args = sys.argv[5:]  # TODO: use it later for a real neural network
 
 args = parser.parse_args()
 base_video_path = args.base_video_path
@@ -66,12 +126,13 @@ print(f"base frames: {base_frames_count}, style frames: {style_frames_count}")
 
 for i in range(min(base_frames_count, style_frames_count)):
     python_name = "python3"
-    network_path = "Dummy.py"
+    network_path = args.network_path
     base_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_BASE)
     style_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_STYLE)
-    output_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_OUTPUT)
+    output_frame = get_frame_path(folder_for_frames, i, 
+                                  f"{FRAME_PREFIX_OUTPUT}_at_iteration_{args.num_iter}", ext = "png")
 
-    subprocess.call([python_name, network_path, base_frame, style_frame, output_frame])
+    subprocess.call([python_name, network_path, base_frame, style_frame, output_frame] + rest_args)
 
 # Determine the width and height from the first image
 image = os.path.join(folder_for_frames, get_frame_path(folder_for_frames, 0, FRAME_PREFIX_OUTPUT))
