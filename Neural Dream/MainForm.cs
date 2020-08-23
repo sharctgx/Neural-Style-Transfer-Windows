@@ -126,6 +126,7 @@ namespace Neural_Dream
 
         private void SrcBtnVideo_Click(object sender, EventArgs e)
         {
+            // TODO
             SetUpOpenFileDialog();
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -139,6 +140,7 @@ namespace Neural_Dream
 
         private void StyleBtnVideo_Click(object sender, EventArgs e)
         {
+            // TODO
             openFileDialog1.Multiselect = true;
             SetUpOpenFileDialog();
             styleCount = 0;
@@ -160,6 +162,7 @@ namespace Neural_Dream
 
         private void DstBtnVideo_Click(object sender, EventArgs e)
         {
+            // TODO
             saveFileDialog1.FileName = "";
             saveFileDialog1.InitialDirectory = desktopPath;
             saveFileDialog1.Filter = "";

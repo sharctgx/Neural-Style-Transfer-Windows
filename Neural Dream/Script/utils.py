@@ -52,3 +52,6 @@ def fromimage(img, mode='RGB'):
 
 def toimage(arr, mode='RGB'):
     return Image.fromarray(arr, mode)
+
+def __main__():
+    return
