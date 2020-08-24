@@ -147,6 +147,7 @@ count = 0
 while os.path.exists(image):
     frame = cv.imread(image)
     out.write(frame)  # Write out frame to video
+    print(f"Write out frame {count}")
     count += 1
     image = get_frame_path(folder_for_frames, count, FRAME_PREFIX_OUTPUT, f"_at_iteration_{args.num_iter}", "png")
 
