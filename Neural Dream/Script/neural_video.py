@@ -1,4 +1,3 @@
-# -*- coding: future_fstrings -*-
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
@@ -8,15 +7,14 @@ import sys
 import cv2 as cv
 import os
 import subprocess
-import shutil
 
 FRAME_PREFIX_BASE = "base"
 FRAME_PREFIX_STYLE = "style"
 FRAME_PREFIX_OUTPUT = "output"
 
 
-def get_frame_path(folder, count, frame_prefix, ext = "jpg"):
-    return os.path.join(folder, f"{frame_prefix}{count}.{ext}")
+def get_frame_path(folder, count, frame_prefix, frame_postfix = "", ext = "jpg"):
+    return os.path.join(folder, f"{frame_prefix}_{count}{frame_postfix}.{ext}")
 
 
 parser = argparse.ArgumentParser(description='Neural style transfer with Keras.')
@@ -89,14 +87,14 @@ parser.add_argument('--preserve_color', dest='color', default="False", type=str,
 parser.add_argument('--min_improvement', default=0.0, type=float,
                     help='Defines minimum improvement required to continue script')
 
-rest_args = sys.argv[5:]  # TODO: use it later for a real neural network
+rest_args = sys.argv[5:]
 
 args = parser.parse_args()
 base_video_path = args.base_video_path
 style_video_path = args.style_video_path
 result_path = args.result_path
 
-folder_for_frames = "../../media"
+folder_for_frames = "media"   # TODO: add temp folder as an argument
 
 if os.path.exists(folder_for_frames):
     for f in os.listdir(folder_for_frames):
@@ -124,18 +122,19 @@ style_frames_count = video_to_frames(style_video_path, folder_for_frames, FRAME_
 
 print(f"base frames: {base_frames_count}, style frames: {style_frames_count}")
 
-for i in range(min(base_frames_count, style_frames_count)):
+for i in range(base_frames_count):
     python_name = "python3"
     network_path = args.network_path
     base_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_BASE)
-    style_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_STYLE)
-    output_frame = get_frame_path(folder_for_frames, i, 
-                                  f"{FRAME_PREFIX_OUTPUT}_at_iteration_{args.num_iter}", ext = "png")
-
-    subprocess.call([python_name, network_path, base_frame, style_frame, output_frame] + rest_args)
+    style_frame = get_frame_path(folder_for_frames, i % style_frames_count, FRAME_PREFIX_STYLE)
+    print(f"Processing frame {i} from {base_frames_count}\n")
+    subprocess.call([python_name, network_path, base_frame, style_frame,
+                     os.path.join(folder_for_frames, f"{FRAME_PREFIX_OUTPUT}_{i}")]
+                    + rest_args)
 
 # Determine the width and height from the first image
-image = os.path.join(folder_for_frames, get_frame_path(folder_for_frames, 0, FRAME_PREFIX_OUTPUT))
+image = get_frame_path(folder_for_frames, 0, FRAME_PREFIX_OUTPUT, f"_at_iteration_{args.num_iter}", "png")
+print(f"Looking for {image}\n")
 frame = cv.imread(image)
 height, width, channels = frame.shape
 
@@ -149,10 +148,8 @@ while os.path.exists(image):
     frame = cv.imread(image)
     out.write(frame)  # Write out frame to video
     count += 1
-    image = get_frame_path(folder_for_frames, count, FRAME_PREFIX_OUTPUT)
+    image = get_frame_path(folder_for_frames, count, FRAME_PREFIX_OUTPUT, f"_at_iteration_{args.num_iter}", "png")
 
 # Release everything if job is finished
 out.release()
 cv.destroyAllWindows()
-
-shutil.rmtree(folder_for_frames)
