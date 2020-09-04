@@ -672,7 +672,6 @@ namespace Neural_Dream
             }
         }
 
-
         private bool PerformChecks()
         {
             // Localization Fix for all countries where decimal point is represented by ',' instead of '.'
