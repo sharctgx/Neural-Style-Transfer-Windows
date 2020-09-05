@@ -141,10 +141,9 @@ namespace Neural_Dream
             }
         }
 
-
         private void StyleBtnVideo_Click(object sender, EventArgs e)
         {
-            SetUpOpenFileDialog();;
+            SetUpOpenFileDialog();
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -181,32 +180,6 @@ namespace Neural_Dream
             }
         }
 
-
-        private void ContentMaskImageVideoBtn_Click(object sender, EventArgs e)
-        {
-            openFileDialog1.Multiselect = false;
-            SetUpOpenFileDialog();
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                label25.Text = openFileDialog1.FileName;
-                contentMaskAvailable = true;    // TODO
-            }
-        }
-
-
-        private void StyleMaskImageVideo_Click(object sender, EventArgs e)
-        {
-            openFileDialog1.Multiselect = false;
-            SetUpOpenFileDialog();
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                label27.Text = openFileDialog1.FileName;
-            }
-        }
-
-
         private void MaskImagesBtn_Click(object sender, EventArgs e)
         {
             openFileDialog1.Multiselect = true;
@@ -242,22 +215,6 @@ namespace Neural_Dream
                 colorMaskCount = 1;
             }
         }
-
-        private void ColorMaskImageVideoBtn_Click(object sender, EventArgs e)
-        {
-            SetUpOpenFileDialog();
-            colorMaskCount = 0;
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                ColorMaskImageLabel.Text = openFileDialog1.FileName;
-                ColorMaskImageBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
-                ColorMaskImageBtn.Text = "";
-
-                colorMaskCount = 1; // TODO
-            }
-        }
-
 
         private void SourceImageDoodle_Click(object sender, EventArgs e)
         {
@@ -606,7 +563,6 @@ namespace Neural_Dream
                     ContentLayerBox.SelectedIndex = 2;
                     break;
             }
-
         }
 
         private string GetNetworkPath()
@@ -722,7 +678,6 @@ namespace Neural_Dream
             return false;
         }
 
-
         private string BuildCommandArgs()
         {
             StringBuilder args = new StringBuilder();
@@ -824,19 +779,6 @@ namespace Neural_Dream
 
 
         private void ExecuteButton_Click_1(object sender, EventArgs e)
-        {
-            if (PerformChecks()) return;
-
-            string command = "Script/" + GetNetworkPath();
-            string args = BuildCommandArgs();
-
-            Console.WriteLine(args);
-            LogData(args);
-
-            RunScript(command, args);
-        }
-
-        private void ExecuteButtonVideo_Click(object sender, EventArgs e)
         {
             if (PerformChecks()) return;
 
