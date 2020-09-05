@@ -214,4 +214,6 @@ ModelManifest.xml
 .idea
 venv/
 media/
+*/__pycache__
+*.pyc
 
