@@ -75,6 +75,15 @@ namespace Neural_Dream
             openFileDialog1.RestoreDirectory = true;
         }
 
+        private void SetUpOpenFileDialogVideo()
+        {
+            openFileDialog1.FileName = "";
+            openFileDialog1.InitialDirectory = desktopPath;
+            openFileDialog1.Filter = "Video (*.mp4)|*.mp4";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+        }
+
         private void SrcBtn_Click(object sender, EventArgs e)
         {
             SetUpOpenFileDialog();
@@ -124,43 +133,27 @@ namespace Neural_Dream
 
         private void SrcBtnVideo_Click(object sender, EventArgs e)
         {
-            // TODO
-            SetUpOpenFileDialog();
+            SetUpOpenFileDialogVideo();
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                SrcPathLabel.Text = openFileDialog1.FileName;
-                SrcBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
-                SrcBtn.Text = "";
+                SrcVideoPathLabel.Text = openFileDialog1.FileName;
             }
         }
 
 
         private void StyleBtnVideo_Click(object sender, EventArgs e)
         {
-            // TODO
-            openFileDialog1.Multiselect = true;
-            SetUpOpenFileDialog();
-            styleCount = 0;
+            SetUpOpenFileDialog();;
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                StringBuilder pathBuilder = new StringBuilder();
-
-                foreach (string fn in openFileDialog1.FileNames)
-                {
-                    pathBuilder.Append("\"").Append(fn).Append("\" ");
-                    styleCount++;
-                }
-                StylePathLabel.Text = pathBuilder.ToString();
-                StyleBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileNames[0]);
-                StyleBtn.Text = "";
+                StyleVideoPathLabel.Text = openFileDialog1.FileName;
             }
         }
 
         private void DstBtnVideo_Click(object sender, EventArgs e)
         {
-            // TODO
             saveFileDialog1.FileName = "";
             saveFileDialog1.InitialDirectory = desktopPath;
             saveFileDialog1.Filter = "";
@@ -168,7 +161,7 @@ namespace Neural_Dream
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                DstPathLabel.Text = saveFileDialog1.FileName;
+                DstVideoPathLabel.Text = saveFileDialog1.FileName;
             }
         }
 
@@ -180,14 +173,36 @@ namespace Neural_Dream
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    ContentMaskPathLabel.Text = openFileDialog1.FileName;
-                    ContentMaskImageBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
-                    ContentMaskImageBtn.Text = "";
+                ContentMaskPathLabel.Text = openFileDialog1.FileName;
+                ContentMaskImageBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
+                ContentMaskImageBtn.Text = "";
 
-                    contentMaskAvailable = true;
-                }
+                contentMaskAvailable = true;
+            }
+        }
+
+
+        private void ContentMaskImageVideoBtn_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Multiselect = false;
+            SetUpOpenFileDialog();
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                label25.Text = openFileDialog1.FileName;
+                contentMaskAvailable = true;    // TODO
+            }
+        }
+
+
+        private void StyleMaskImageVideo_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Multiselect = false;
+            SetUpOpenFileDialog();
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                label27.Text = openFileDialog1.FileName;
             }
         }
 
@@ -225,6 +240,21 @@ namespace Neural_Dream
                 ColorMaskImageBtn.Text = "";
 
                 colorMaskCount = 1;
+            }
+        }
+
+        private void ColorMaskImageVideoBtn_Click(object sender, EventArgs e)
+        {
+            SetUpOpenFileDialog();
+            colorMaskCount = 0;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                ColorMaskImageLabel.Text = openFileDialog1.FileName;
+                ColorMaskImageBtn.BackgroundImage = Image.FromFile(openFileDialog1.FileName);
+                ColorMaskImageBtn.Text = "";
+
+                colorMaskCount = 1; // TODO
             }
         }
 
@@ -781,6 +811,17 @@ namespace Neural_Dream
 
             return args.ToString();
         }
+
+
+        private string BuildVideoCommandArgs()
+        {
+            StringBuilder args = new StringBuilder();
+            // TODO
+            // ...
+
+            return args.ToString();
+        }
+
 
         private void ExecuteButton_Click_1(object sender, EventArgs e)
         {
