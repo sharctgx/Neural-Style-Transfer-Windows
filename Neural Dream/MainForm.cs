@@ -51,6 +51,7 @@ namespace Neural_Dream
         private const string INEURAL_DOODLE_PATH = "improved_neural_doodle.py";
         private const string COLOR_TRANSFER_PATH = "color_transfer.py";
         private const string MASKED_TRANSFER_PATH = "mask_transfer.py";
+        private const string NEURAL_VIDEO_PATH = "neural_video.py";
 
         public MainForm()
         {
@@ -64,8 +65,7 @@ namespace Neural_Dream
             ModelTypeBox.Text = "vgg16";
             ContentLossTypeBox.Text = "0";
         }
-
-
+        
         private void SetUpOpenFileDialog()
         {
             openFileDialog1.FileName = "";
@@ -143,7 +143,7 @@ namespace Neural_Dream
 
         private void StyleBtnVideo_Click(object sender, EventArgs e)
         {
-            SetUpOpenFileDialog();
+            SetUpOpenFileDialogVideo();
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -163,7 +163,6 @@ namespace Neural_Dream
                 DstVideoPathLabel.Text = saveFileDialog1.FileName;
             }
         }
-
 
         private void ContentMaskImageBtn_Click(object sender, EventArgs e)
         {
@@ -385,6 +384,13 @@ namespace Neural_Dream
                     "Illegal number of masks");
                 return false;
             }
+
+            if (VideoCheckBox.Checked && maskCount > 1)
+            {
+                MessageBox.Show("You can have only one style mask if working with video",
+                    "Illegal number of masks");
+                return false;
+            }
             return true;
         }
 
@@ -567,26 +573,12 @@ namespace Neural_Dream
 
         private string GetNetworkPath()
         {
-            if (NetworkCheckBox.Checked)
-            {
-                return INETWORK_PATH;
-            }
-            else
-            {
-                return NETWORK_PATH;
-            }
+            return NetworkCheckBox.Checked ? INETWORK_PATH : NETWORK_PATH;
         }
 
         private string GetDoodlePath()
         {
-            if (UseImprovedNetworkDoodle.Checked)
-            {
-                return INEURAL_DOODLE_PATH;
-            }
-            else
-            {
-                return NEURAL_DOODLE_PATH;
-            }
+            return UseImprovedNetworkDoodle.Checked ? INEURAL_DOODLE_PATH : NEURAL_DOODLE_PATH;
         }
 
         private string GetColorTransferPath()
@@ -601,8 +593,8 @@ namespace Neural_Dream
 
         public void RunScript(string cmd, string args)
         {
-            ProcessStartInfo start = new ProcessStartInfo();
-            bool exists = File.Exists(Settings.Default.PythonPath);
+            var start = new ProcessStartInfo();
+            var exists = File.Exists(Settings.Default.PythonPath);
 
             if (Settings.Default.PythonPath.Equals("--") || !exists)
             {
@@ -648,13 +640,13 @@ namespace Neural_Dream
             }
 
             start.FileName = Settings.Default.PythonPath;
-            start.Arguments = string.Format("{0} {1}", cmd, args);
+            start.Arguments = $"{cmd} {args}";
             start.UseShellExecute = true;
             start.ErrorDialog = true;
 
-            using (Process process = Process.Start(start))
+            using (var process = Process.Start(start))
             {
-                process.WaitForExit();
+                process?.WaitForExit();
             }
         }
 
@@ -685,6 +677,13 @@ namespace Neural_Dream
             args.Append(StylePathLabel.Text);
             args.Append("\"" + DstPathLabel.Text + "\" ");
 
+            BuildNamedArgsForNeuralTransfer(args);
+
+            return args.ToString();
+        }
+
+        private void BuildNamedArgsForNeuralTransfer(StringBuilder args)
+        {
             if (contentMaskAvailable)
                 args.Append("--content_mask \"" + ContentMaskPathLabel.Text + "\" ");
 
@@ -704,14 +703,12 @@ namespace Neural_Dream
             args.Append("--rescale_method \"" + RescaleAlgoBox.Text + "\" ");
             args.Append("--maintain_aspect_ratio \"" + MaintainAspectRatioCheckBox.Checked + "\" ");
             args.Append("--content_layer \"" + ContentLayerBox.Text + "\" ");
-            args.Append("--init_image \"" + ((initLayerImage)? initImagePath : InitialLayerComboBox.Text) + "\" ");
+            args.Append("--init_image \"" + ((initLayerImage) ? initImagePath : InitialLayerComboBox.Text) + "\" ");
             args.Append("--pool_type \"" + PoolingTypeBox.Text + "\" ");
             args.Append("--preserve_color \"" + PreserveColorBox.Checked + "\" ");
             args.Append("--min_improvement " + minThreshold + " ");
             args.Append("--model \"" + ModelTypeBox.Text + "\" ");
             args.Append("--content_loss_type " + ContentLossTypeBox.Text + "");
-
-            return args.ToString();
         }
 
         private string BuildDoodleCommandArgs()
@@ -770,9 +767,13 @@ namespace Neural_Dream
 
         private string BuildVideoCommandArgs()
         {
-            StringBuilder args = new StringBuilder();
-            // TODO
-            // ...
+            var args = new StringBuilder();
+            args.Append("\"" + SrcVideoPathLabel.Text + "\" ");
+            args.Append("\"" + StyleVideoPathLabel.Text + "\" ");
+            args.Append("\"" + DstVideoPathLabel.Text + "\" ");
+            args.Append("Script/" + GetNetworkPath() + " ");
+            
+            BuildNamedArgsForNeuralTransfer(args);
 
             return args.ToString();
         }
@@ -781,10 +782,24 @@ namespace Neural_Dream
         private void ExecuteButton_Click_1(object sender, EventArgs e)
         {
             if (PerformChecks()) return;
+            
+            var curDir = Directory.GetCurrentDirectory();
+            Console.WriteLine(curDir);
 
-            string command = "Script/" + GetNetworkPath();
-            string args = BuildCommandArgs();
-
+            string command;
+            string args;
+            
+            if (VideoCheckBox.Checked)
+            {
+                command = "Script/" + NEURAL_VIDEO_PATH;
+                args = BuildVideoCommandArgs();
+            }
+            else
+            {
+                command = "Script/" + GetNetworkPath();
+                args = BuildCommandArgs();
+            }
+            
             Console.WriteLine(args);
             LogData(args);
 
@@ -829,7 +844,7 @@ namespace Neural_Dream
         {
             if (PerformChecks()) return;
 
-            string args = BuildCommandArgs();
+            string args = VideoCheckBox.Checked ? BuildVideoCommandArgs() : BuildCommandArgs();
 
             lastArgumentList = args;
 

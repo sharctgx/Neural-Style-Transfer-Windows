@@ -106,6 +106,7 @@ else:
 def video_to_frames(video_path, folder_for_frames, frame_prefix):
     global success, image, count
     vidcap = cv.VideoCapture(video_path)
+    fps = vidcap.get(cv.CAP_PROP_FPS)
     success, image = vidcap.read()
     count = 0
     while success:
@@ -114,16 +115,16 @@ def video_to_frames(video_path, folder_for_frames, frame_prefix):
         count += 1
         success, image = vidcap.read()
 
-    return count
+    return (count, fps)
 
 
-base_frames_count = video_to_frames(base_video_path, folder_for_frames, FRAME_PREFIX_BASE)
-style_frames_count = video_to_frames(style_video_path, folder_for_frames, FRAME_PREFIX_STYLE)
+(base_frames_count, base_fps) = video_to_frames(base_video_path, folder_for_frames, FRAME_PREFIX_BASE)
+(style_frames_count, _) = video_to_frames(style_video_path, folder_for_frames, FRAME_PREFIX_STYLE)
 
 print(f"base frames: {base_frames_count}, style frames: {style_frames_count}")
 
 for i in range(base_frames_count):
-    python_name = "python3"
+    python_name = sys.executable
     network_path = args.network_path
     base_frame = get_frame_path(folder_for_frames, i, FRAME_PREFIX_BASE)
     style_frame = get_frame_path(folder_for_frames, i % style_frames_count, FRAME_PREFIX_STYLE)
@@ -140,7 +141,7 @@ height, width, channels = frame.shape
 
 # Define the codec and create VideoWriter object
 fourcc = cv.VideoWriter_fourcc(*'mp4v')  # Be sure to use lower case
-out = cv.VideoWriter(result_path, fourcc, 20.0, (width, height))
+out = cv.VideoWriter(result_path, fourcc, base_fps, (width, height))
 
 count = 0
 
