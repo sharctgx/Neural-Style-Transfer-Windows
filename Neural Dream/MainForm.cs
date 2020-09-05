@@ -79,7 +79,7 @@ namespace Neural_Dream
         {
             openFileDialog1.FileName = "";
             openFileDialog1.InitialDirectory = desktopPath;
-            openFileDialog1.Filter = "Video (*.mp4)|*.mp4";
+            openFileDialog1.Filter = "Video (*.mp4)|*.mp4|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
         }
